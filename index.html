@@ -355,9 +355,23 @@ function save(patch){
    render();
  });
 }
+function normStu(x){
+ var d=x.days;
+ if(Array.isArray(d))d=d.filter(function(v){return v!==null&&v!==undefined&&v!==''}).map(Number);
+ else if(d&&typeof d==='object')d=Object.keys(d).map(function(k){return Number(d[k])});
+ else d=[];
+ d=d.filter(function(v){return !isNaN(v)});
+ return {id:x.id,name:x.name||'',school:x.school||'',grade:x.grade||'',
+         teacher:x.teacher||'',days:d,active:x.active!==false};
+}
+function normEnt(e){
+ return {id:e.id,school:e.school||'',grade:e.grade||'',term:e.term||'',start:e.start||'',end:e.end||'',
+         mathDate:e.mathDate||'',scope:e.scope||'',print:e.print||'',notice:e.notice||'',
+         by:e.by||'',ts:e.ts||'',seed:!!e.seed,confirmed:!!e.confirmed};
+}
 window.KLADI_APPLY=function(next){
  if(!next)return;
- S.students=next.students||S.students; S.entries=next.entries||S.entries;
+ S.students=(next.students||S.students).map(normStu); S.entries=(next.entries||S.entries).map(normEnt);
  S.overrides=next.overrides||{}; S.skips=next.skips||{}; S.updated=next.updated||S.updated;
  if(next.schools)S.schools=next.schools;
  render();
@@ -888,7 +902,7 @@ window.KLADI_ATTACH=function(store){
 function restoreLocal(){
  try{var raw=localStorage.getItem(LKEY);if(!raw)return false;
   var v=JSON.parse(raw);if(!v||!v.students)return false;
-  S.students=v.students;S.entries=v.entries||S.entries;S.overrides=v.overrides||{};S.skips=v.skips||{};
+  S.students=(v.students||[]).map(normStu);S.entries=(v.entries||S.entries).map(normEnt);S.overrides=v.overrides||{};S.skips=v.skips||{};
   if(v.schools)S.schools=v.schools;S.updated=v.updated||'';return true;
  }catch(e){return false}
 }
