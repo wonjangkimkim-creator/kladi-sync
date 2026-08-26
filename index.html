@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kladi Sync — KLADI 학원 시험 관제</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style id="css">:root{
+ --bg:#F4F6F8;--surface:#FFFFFF;--surface2:#FAFBFC;--ink:#151A22;--ink2:#5B6472;--ink3:#8B94A3;
+ --line:#DEE3EA;--line2:#EDF0F4;
+ --mid:#96600A;--mid-bg:#FAF0DC;--m3:#A32552;--m3-bg:#FBE6ED;--fin:#2A4A9E;--fin-bg:#E7ECFA;
+ --warn:#B4342A;--warn-bg:#FBE9E7;--ok:#0B6B62;--ok-bg:#E2F1EE;--hol:#B03A55;--hol-bg:#FBEDF0;
+ --acc:#2A4A9E;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0E1117;--surface:#161A21;--surface2:#1B2028;--ink:#E9EDF4;--ink2:#9BA5B4;--ink3:#6E7787;
+ --line:#262C36;--line2:#1F242D;
+ --mid:#E3B056;--mid-bg:#332812;--m3:#F2879F;--m3-bg:#3A1826;--fin:#8FADF2;--fin-bg:#18213B;
+ --warn:#F2897E;--warn-bg:#3A1B17;--ok:#59C2B2;--ok-bg:#122B28;--hol:#EE8AA0;--hol-bg:#33161E;
+ --acc:#8FADF2;
+}}
+:root[data-theme="dark"]{
+ --bg:#0E1117;--surface:#161A21;--surface2:#1B2028;--ink:#E9EDF4;--ink2:#9BA5B4;--ink3:#6E7787;
+ --line:#262C36;--line2:#1F242D;
+ --mid:#E3B056;--mid-bg:#332812;--m3:#F2879F;--m3-bg:#3A1826;--fin:#8FADF2;--fin-bg:#18213B;
+ --warn:#F2897E;--warn-bg:#3A1B17;--ok:#59C2B2;--ok-bg:#122B28;--hol:#EE8AA0;--hol-bg:#33161E;
+ --acc:#8FADF2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.5}
+.mono,.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1280px;margin:0 auto;padding:26px 18px 90px;display:flex;flex-direction:column;gap:18px}
+h1{font-family:"Gowun Batang",serif;font-size:27px;margin:0;font-weight:700;letter-spacing:-.01em;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1 .tagline{font-family:"IBM Plex Sans KR",sans-serif;font-size:13px;font-weight:400;color:var(--ink3);letter-spacing:0}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.eyebrow{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:6px}
+.savebox{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink3)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:9px 15px;
+ font:inherit;font-size:13.5px;font-weight:500;color:var(--ink2);cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.tab:hover{color:var(--ink)} .tab .b{display:inline-block;margin-left:6px;background:var(--warn);color:#fff;
+ border-radius:999px;font-size:10px;padding:1px 6px;font-weight:700;vertical-align:1px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink3);font-weight:600}
+select,input[type=text],input[type=date],textarea{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);
+ border:1px solid var(--line);border-radius:4px;padding:6px 9px;min-width:0}
+textarea{resize:vertical;min-height:52px;width:100%}
+select:focus-visible,input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.btn{appearance:none;font:inherit;font-size:13px;font-weight:600;border-radius:4px;padding:7px 14px;cursor:pointer;
+ background:var(--ink);color:var(--surface);border:1px solid var(--ink)}
+.btn.sec{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.sm{padding:4px 9px;font-size:11.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:16px 18px}
+.grid7{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));min-width:1000px}
+.scroller{overflow-x:auto;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.dow{padding:7px 9px;font-size:11px;font-weight:600;letter-spacing:.09em;color:var(--ink3);background:var(--surface2);border-bottom:1px solid var(--line)}
+.dow.sat{color:var(--fin)}.dow.sun{color:var(--hol)}
+.day{min-height:104px;padding:6px 7px 8px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);
+ display:flex;flex-direction:column;gap:4px;background:var(--surface)}
+.day:nth-child(7n){border-right:0}
+.day.out{background:var(--bg);opacity:.55}.day.we{background:var(--surface2)}.day.hol{background:var(--hol-bg)}
+.dnum{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;gap:6px;align-items:center}
+.day.hol .dnum{color:var(--hol)}
+.holtag{font-size:10px;font-weight:600;color:var(--hol)}
+.ch{display:block;border-radius:3px;padding:2px 5px;font-size:11px;line-height:1.35;border-left:3px solid;background:var(--surface2)}
+.ch.중간{border-color:var(--mid);background:var(--mid-bg);color:var(--mid)}
+.ch.기말{border-color:var(--fin);background:var(--fin-bg);color:var(--fin)}
+.ch.m3{border-color:var(--m3);background:var(--m3-bg);color:var(--m3)}
+.ch .g{opacity:.85;font-size:10px}
+.mathbtn{appearance:none;border:1px solid var(--ok);background:var(--ok-bg);color:var(--ok);font:inherit;font-size:10.5px;
+ font-weight:700;border-radius:3px;padding:2px 6px;cursor:pointer;text-align:left;width:100%}
+.mathbtn:hover{filter:brightness(.96)}
+.warnpin{color:var(--warn);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line2);vertical-align:top}
+th{font-size:11px;letter-spacing:.05em;color:var(--ink3);font-weight:600;background:var(--surface2);position:sticky;top:0}
+tr.conf td{background:var(--warn-bg)}
+.pill{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--ink2)}
+.pill.ok{color:var(--ok);border-color:var(--ok);background:var(--ok-bg)}
+.pill.warn{color:var(--warn);border-color:var(--warn);background:var(--warn-bg)}
+.pill.seed{color:var(--ink3)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.dayrow{display:grid;grid-template-columns:112px repeat(3,1fr);gap:0;border-bottom:1px solid var(--line)}
+.dayrow>div{padding:9px 10px;border-right:1px solid var(--line2)}
+.dayrow>div:last-child{border-right:0}
+.dayrow.head{background:var(--surface2);font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.05em}
+.dayrow .dl{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12.5px}
+.stu{display:inline-block;font-size:11.5px;padding:1px 6px;border-radius:3px;margin:0 3px 3px 0;background:var(--surface2);border:1px solid var(--line)}
+.stu.ab{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.stu.mk{background:var(--m3-bg);border-color:var(--m3);color:var(--m3)}
+.stu.rg{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.cnt{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:700;opacity:.75}
+.dayck{display:flex;gap:3px}
+.dayck label{font-size:10.5px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink3);cursor:pointer}
+.dayck input{margin:0}
+.modal{position:fixed;inset:0;background:rgba(10,12,16,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.sheet{background:var(--surface);border-radius:6px;max-width:640px;width:100%;max-height:82vh;overflow:auto;padding:20px 22px;border:1px solid var(--line)}
+.sheet h3{font-family:"Gowun Batang",serif;margin:0 0 4px;font-size:19px}
+.muted{color:var(--ink3);font-size:12px}
+.banner{border-radius:5px;padding:10px 14px;font-size:12.5px;border:1px solid}
+.banner.warn{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.banner.info{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.hr{height:1px;background:var(--line);margin:2px 0}
+.small{font-size:11.5px;color:var(--ink3)}
+@media(max-width:640px){.wrap{padding:16px 10px 70px}.dayrow{grid-template-columns:1fr}}
+
+/* ---------- 진행률 / 출력 ---------- */
+.big{font-family:"IBM Plex Mono",monospace;font-size:27px;font-weight:600;letter-spacing:-.02em;line-height:1.2;margin:2px 0 6px}
+.bar2{display:inline-block;width:110px;height:7px;border-radius:99px;background:var(--line);vertical-align:middle;overflow:hidden}
+.bar2 i{display:block;height:100%;border-radius:99px}
+.frow{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--line2)}
+.frow>span:first-child{width:88px;color:var(--ink2)}
+.rephead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+ padding:0 0 8px;border-bottom:2px solid var(--ink);margin-bottom:10px;font-size:13px}
+table.rep{font-size:12px}
+table.rep th{white-space:nowrap}
+table.rep td{vertical-align:top}
+td.st{font-weight:600;font-size:11.5px}
+td.st.good{color:var(--ok)} td.st.bad{color:var(--warn)}
+@media print{
+ @page{size:A4 landscape;margin:9mm}
+ body{background:#fff}
+ body *{visibility:hidden}
+ #printArea,#printArea *{visibility:visible}
+ #printArea{position:absolute;left:0;top:0;width:100%}
+ #printArea .scroller{border:0;overflow:visible}
+ table.rep{font-size:8pt}
+ table.rep th{background:#F0F2F5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ table.rep th,table.rep td{padding:3px 5px;border-bottom:1px solid #CCD2DA}
+ tr{break-inside:avoid}
+ .noprint{display:none}
+}
+
+/* ---------- 미실시 ---------- */
+.pill.skip{color:var(--ink3);border-color:var(--ink3);background:var(--surface2)}
+.card.skipped{opacity:.72;border-style:dashed}
+.card.skipped .hr ~ .bar,.card.skipped textarea,.card.skipped .hr ~ div{filter:grayscale(1)}
+.skiprow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 2px;
+ padding:8px 10px;border-radius:4px;background:var(--surface2);border:1px dashed var(--line)}
+.skipck{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);cursor:pointer;white-space:nowrap}
+.skipck input{margin:0;width:15px;height:15px}
+.skiprow input[type=text]{flex:1;min-width:170px;font-size:12px;padding:4px 8px}
+td.st.skip{color:var(--ink3)}
+
+.fbbanner{font-family:"IBM Plex Sans KR",sans-serif;font-size:13px;padding:11px 18px;background:#FBE9E7;color:#B4342A;border-bottom:1px solid #B4342A}
+.fbbanner.info{background:#E2F1EE;color:#0B6B62;border-color:#0B6B62}
+.fbbanner code{font-family:"IBM Plex Mono",monospace;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script id="state" type="application/json">{"v": 1, "students": [{"id": "s1", "name": "류강민", "school": "반포고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s2", "name": "김태은", "school": "방배중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s3", "name": "노진호", "school": "상문고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s4", "name": "김건호", "school": "서울고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s5", "name": "김무빈", "school": "서울고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s6", "name": "조예준", "school": "서일중학교", "grade": "중2", "teacher": "강지성T", "days": [], "active": true}, {"id": "s7", "name": "김동하", "school": "세화고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s8", "name": "이태인", "school": "세화고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s9", "name": "이건재", "school": "세화고등학교", "grade": "고2", "teacher": "강지성T", "days": [], "active": true}, {"id": "s10", "name": "박승효", "school": "세화여자고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s11", "name": "임세은", "school": "세화여자고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s12", "name": "조연오", "school": "세화여자고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s13", "name": "조서연", "school": "세화여자고등학교", "grade": "고2", "teacher": "강지성T", "days": [], "active": true}, {"id": "s14", "name": "조유민", "school": "세화여자중학교", "grade": "중2", "teacher": "강지성T", "days": [], "active": true}, {"id": "s15", "name": "유석윤", "school": "신반포중학교", "grade": "중2", "teacher": "강지성T", "days": [], "active": true}, {"id": "s16", "name": "정동우", "school": "신반포중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s17", "name": "김한서", "school": "용산고등학교", "grade": "고1", "teacher": "강지성T", "days": [], "active": true}, {"id": "s18", "name": "이은서", "school": "원촌중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s19", "name": "이준서", "school": "원촌중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s20", "name": "정승원", "school": "원촌중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s21", "name": "한나예", "school": "원촌중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s22", "name": "백재민", "school": "이수중학교", "grade": "중3", "teacher": "강지성T", "days": [], "active": true}, {"id": "s23", "name": "정반클", "school": "청담고등학교", "grade": "고2", "teacher": "강지성T", "days": [], "active": true}, {"id": "s24", "name": "이아진", "school": "경원중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s25", "name": "박반클", "school": "대치중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s26", "name": "배경윤", "school": "동덕여자중학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s27", "name": "서민경", "school": "서문여자중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s28", "name": "김이준", "school": "서운중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s29", "name": "장서은", "school": "서일중학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s30", "name": "엄승유", "school": "서일중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s31", "name": "유소율", "school": "서일중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s32", "name": "이준철", "school": "서일중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s33", "name": "정지현", "school": "서일중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s34", "name": "황유찬", "school": "서초중학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s35", "name": "김유주", "school": "세화여자중학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s36", "name": "여채율", "school": "세화여자중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s37", "name": "배은빈", "school": "세화여자중학교", "grade": "중3", "teacher": "박유경T", "days": [], "active": true}, {"id": "s38", "name": "이환", "school": "신반포중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s39", "name": "홍제인", "school": "예원학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s40", "name": "전재우", "school": "오산중학교", "grade": "중3", "teacher": "박유경T", "days": [], "active": true}, {"id": "s41", "name": "전윤아", "school": "원촌중학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s42", "name": "이아영", "school": "원촌중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s43", "name": "최태훈", "school": "원촌중학교", "grade": "중2", "teacher": "박유경T", "days": [], "active": true}, {"id": "s44", "name": "최준서", "school": "이수중학교", "grade": "중1", "teacher": "박유경T", "days": [], "active": true}, {"id": "s45", "name": "김선민", "school": "KIS(중등)", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s46", "name": "류시은", "school": "경원중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s47", "name": "김주윤", "school": "경원중학교", "grade": "중3", "teacher": "성민주T", "days": [], "active": true}, {"id": "s48", "name": "김주은", "school": "서문여자중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s49", "name": "박세준", "school": "서일중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s50", "name": "이다은", "school": "서일중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s51", "name": "정채윤", "school": "서일중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s52", "name": "박서인", "school": "서일중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s53", "name": "여윤기", "school": "서일중학교", "grade": "중3", "teacher": "성민주T", "days": [], "active": true}, {"id": "s54", "name": "송유나", "school": "세화여자중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s55", "name": "윤효주", "school": "세화여자중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s56", "name": "이하린", "school": "세화여자중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s57", "name": "하태연", "school": "세화여자중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s58", "name": "현지효", "school": "세화여자중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s59", "name": "이윤상", "school": "신반포중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s60", "name": "김지민", "school": "원촌중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s61", "name": "김채원", "school": "원촌중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s62", "name": "서웅규", "school": "원촌중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s63", "name": "윤지후", "school": "원촌중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s64", "name": "최서우", "school": "원촌중학교", "grade": "중1", "teacher": "성민주T", "days": [], "active": true}, {"id": "s65", "name": "우담빈", "school": "원촌중학교", "grade": "중2", "teacher": "성민주T", "days": [], "active": true}, {"id": "s66", "name": "이채원", "school": "반포고등학교", "grade": "고1", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s67", "name": "김지우", "school": "반포고등학교", "grade": "고2", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s68", "name": "박은서", "school": "방배중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s69", "name": "장은서", "school": "서운중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s70", "name": "정나은", "school": "서일중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s71", "name": "김도현", "school": "서초중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s72", "name": "노하율", "school": "서초중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s73", "name": "민지호", "school": "서초중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s74", "name": "이기윤", "school": "서초중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s75", "name": "홍규원", "school": "서초중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s76", "name": "박지민", "school": "세화고등학교", "grade": "고1", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s77", "name": "양하율", "school": "세화여자고등학교", "grade": "고1", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s78", "name": "홍윤기", "school": "신동중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s79", "name": "이해성", "school": "오산중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s80", "name": "권수진", "school": "원촌중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s81", "name": "김시우", "school": "원촌중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s82", "name": "진수현", "school": "원촌중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s83", "name": "황서원", "school": "원촌중학교", "grade": "중3", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s84", "name": "고윤", "school": "이화여자외국어고등학교", "grade": "고1", "teacher": "성창훈T", "days": [], "active": true}, {"id": "s85", "name": "고수빈", "school": "서운중학교", "grade": "중2", "teacher": "이다인T", "days": [], "active": true}, {"id": "s86", "name": "허서아", "school": "서일중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s87", "name": "박혜인", "school": "서일중학교", "grade": "중2", "teacher": "이다인T", "days": [], "active": true}, {"id": "s88", "name": "강다연", "school": "세화여자중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s89", "name": "윤주아", "school": "세화여자중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s90", "name": "고수빈A", "school": "세화여자중학교", "grade": "중2", "teacher": "이다인T", "days": [], "active": true}, {"id": "s91", "name": "구민채", "school": "세화여자중학교", "grade": "중2", "teacher": "이다인T", "days": [], "active": true}, {"id": "s92", "name": "김민준", "school": "신반포중학교", "grade": "중2", "teacher": "이다인T", "days": [], "active": true}, {"id": "s93", "name": "서형원", "school": "신반포중학교", "grade": "중2", "teacher": "이다인T", "days": [], "active": true}, {"id": "s94", "name": "김수환", "school": "원촌중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s95", "name": "김시윤", "school": "원촌중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s96", "name": "민소은", "school": "원촌중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s97", "name": "성지민", "school": "원촌중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s98", "name": "오서준", "school": "이수중학교", "grade": "중1", "teacher": "이다인T", "days": [], "active": true}, {"id": "s99", "name": "김대환", "school": "경원중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s100", "name": "남진혁", "school": "상현중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s101", "name": "정유리", "school": "서일중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s102", "name": "김채원", "school": "서일중학교", "grade": "중2", "teacher": "이수진T", "days": [], "active": true}, {"id": "s103", "name": "송지호", "school": "서일중학교", "grade": "중2", "teacher": "이수진T", "days": [], "active": true}, {"id": "s104", "name": "박수빈", "school": "세화여자중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s105", "name": "서혜인", "school": "세화여자중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s106", "name": "민지우", "school": "세화여자중학교", "grade": "중2", "teacher": "이수진T", "days": [], "active": true}, {"id": "s107", "name": "김규리", "school": "숭의여자중학교", "grade": "중2", "teacher": "이수진T", "days": [], "active": true}, {"id": "s108", "name": "한다인", "school": "숭의여자중학교", "grade": "중3", "teacher": "이수진T", "days": [], "active": true}, {"id": "s109", "name": "공민서", "school": "신반포중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s110", "name": "조정후", "school": "용강중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s111", "name": "나예원", "school": "원촌중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s112", "name": "배정준", "school": "원촌중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s113", "name": "오승빈", "school": "원촌중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s114", "name": "유지은", "school": "원촌중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s115", "name": "김민찬", "school": "원촌중학교", "grade": "중2", "teacher": "이수진T", "days": [], "active": true}, {"id": "s116", "name": "김한나", "school": "원촌중학교", "grade": "중3", "teacher": "이수진T", "days": [], "active": true}, {"id": "s117", "name": "이시윤", "school": "원촌중학교", "grade": "중3", "teacher": "이수진T", "days": [], "active": true}, {"id": "s118", "name": "정지호", "school": "장승중학교", "grade": "중1", "teacher": "이수진T", "days": [], "active": true}, {"id": "s119", "name": "민유선", "school": "경원중학교", "grade": "중1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s120", "name": "안효준", "school": "경원중학교", "grade": "중1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s121", "name": "장현준", "school": "경원중학교", "grade": "중1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s122", "name": "이태윤", "school": "경원중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s123", "name": "김호연", "school": "동덕여자고등학교", "grade": "고1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s124", "name": "박성원", "school": "동양중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s125", "name": "문선우", "school": "동작중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s126", "name": "김건희", "school": "민족사관고등학교", "grade": "고2", "teacher": "이영운T", "days": [], "active": true}, {"id": "s127", "name": "한동훈", "school": "서운중학교", "grade": "중1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s128", "name": "박서진", "school": "서운중학교", "grade": "중2", "teacher": "이영운T", "days": [], "active": true}, {"id": "s129", "name": "김경준", "school": "서일중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s130", "name": "백기범", "school": "서일중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s131", "name": "황여준", "school": "서일중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s132", "name": "윤지우", "school": "성암국제무역고등학교", "grade": "고1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s133", "name": "최하준", "school": "세화고등학교", "grade": "고1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s134", "name": "엄민영", "school": "세화여자고등학교", "grade": "고1", "teacher": "이영운T", "days": [], "active": true}, {"id": "s135", "name": "전재희", "school": "세화여자중학교", "grade": "중2", "teacher": "이영운T", "days": [], "active": true}, {"id": "s136", "name": "정시우", "school": "신반포중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s137", "name": "반클테", "school": "원촌중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s138", "name": "이서윤", "school": "한강중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s139", "name": "한상우", "school": "한강중학교", "grade": "중3", "teacher": "이영운T", "days": [], "active": true}, {"id": "s140", "name": "김도윤", "school": "경원중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s141", "name": "김윤재", "school": "경원중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s142", "name": "이서호", "school": "경원중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s143", "name": "김하담", "school": "경원중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s144", "name": "박세진", "school": "경원중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s145", "name": "송지후", "school": "경원중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s146", "name": "이다현", "school": "경원중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s147", "name": "방도윤", "school": "방배중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s148", "name": "김세현", "school": "서일중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s149", "name": "추리안", "school": "서일중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s150", "name": "김보겸", "school": "서일중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s151", "name": "이주원", "school": "서일중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s152", "name": "정준혁", "school": "서초중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s153", "name": "김유찬", "school": "신반포중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s154", "name": "이선우", "school": "신반포중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s155", "name": "안효재", "school": "신반포중학교", "grade": "중3", "teacher": "이정수T", "days": [], "active": true}, {"id": "s156", "name": "주예준", "school": "신반포중학교", "grade": "중3", "teacher": "이정수T", "days": [], "active": true}, {"id": "s157", "name": "이수빈", "school": "아현중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s158", "name": "최민석", "school": "원촌중학교", "grade": "중1", "teacher": "이정수T", "days": [], "active": true}, {"id": "s159", "name": "김준후", "school": "원촌중학교", "grade": "중2", "teacher": "이정수T", "days": [], "active": true}, {"id": "s160", "name": "박준호", "school": "원촌중학교", "grade": "중3", "teacher": "이정수T", "days": [], "active": true}, {"id": "s161", "name": "이동윤", "school": "원촌중학교", "grade": "중3", "teacher": "이정수T", "days": [], "active": true}, {"id": "s162", "name": "김희원", "school": "경원중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s163", "name": "정지율", "school": "방배중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s164", "name": "변제헌", "school": "방배중학교", "grade": "중3", "teacher": "정서현T", "days": [], "active": true}, {"id": "s165", "name": "이수호", "school": "서운중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s166", "name": "김태진", "school": "서운중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s167", "name": "송윤", "school": "서일중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s168", "name": "정지유", "school": "서일중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s169", "name": "선도윤", "school": "서일중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s170", "name": "송지민", "school": "서일중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s171", "name": "최라원", "school": "세화여자중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s172", "name": "심재민", "school": "세화여자중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s173", "name": "유이서", "school": "세화여자중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s174", "name": "방예은", "school": "신동중학교", "grade": "중2", "teacher": "정서현T", "days": [], "active": true}, {"id": "s175", "name": "박나연", "school": "신반포중학교", "grade": "중3", "teacher": "정서현T", "days": [], "active": true}, {"id": "s176", "name": "이서은", "school": "용강중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s177", "name": "강민진", "school": "원촌중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s178", "name": "권우재", "school": "원촌중학교", "grade": "중1", "teacher": "정서현T", "days": [], "active": true}, {"id": "s179", "name": "김동건", "school": "원촌중학교", "grade": "중3", "teacher": "정서현T", "days": [], "active": true}, {"id": "s180", "name": "이태린", "school": "원촌중학교", "grade": "중3", "teacher": "정서현T", "days": [], "active": true}, {"id": "s181", "name": "김시우", "school": "경원중학교", "grade": "중2", "teacher": "황동규T", "days": [], "active": true}, {"id": "s182", "name": "이용희", "school": "경원중학교", "grade": "중2", "teacher": "황동규T", "days": [], "active": true}, {"id": "s183", "name": "김태준", "school": "상문고등학교", "grade": "고2", "teacher": "황동규T", "days": [], "active": true}, {"id": "s184", "name": "이지호", "school": "서일중학교", "grade": "중2", "teacher": "황동규T", "days": [], "active": true}, {"id": "s185", "name": "강다율", "school": "서초중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s186", "name": "박준환", "school": "서초중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s187", "name": "유성연", "school": "서초중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s188", "name": "서정인", "school": "세화여자중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s189", "name": "전은겸", "school": "신동중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s190", "name": "김도현", "school": "신반포중학교", "grade": "중2", "teacher": "황동규T", "days": [], "active": true}, {"id": "s191", "name": "이승재", "school": "신반포중학교", "grade": "중2", "teacher": "황동규T", "days": [], "active": true}, {"id": "s192", "name": "석지훈", "school": "오산중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s193", "name": "이규원", "school": "오산중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s194", "name": "백연서", "school": "원촌중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}, {"id": "s195", "name": "이서준", "school": "원촌중학교", "grade": "중3", "teacher": "황동규T", "days": [], "active": true}], "entries": [{"id": "e1", "school": "원촌중학교", "grade": "중1", "term": "중간", "start": "2026-09-29", "end": "2026-09-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e2", "school": "원촌중학교", "grade": "중2", "term": "중간", "start": "2026-09-29", "end": "2026-09-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e3", "school": "원촌중학교", "grade": "중3", "term": "기말", "start": "2026-10-28", "end": "2026-10-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e4", "school": "원촌중학교", "grade": "중1", "term": "기말", "start": "2026-12-09", "end": "2026-12-10", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e5", "school": "원촌중학교", "grade": "중2", "term": "기말", "start": "2026-12-09", "end": "2026-12-10", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e6", "school": "서일중학교", "grade": "중1", "term": "중간", "start": "2026-09-22", "end": "2026-09-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e7", "school": "서일중학교", "grade": "중2", "term": "중간", "start": "2026-09-22", "end": "2026-09-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e8", "school": "서일중학교", "grade": "중3", "term": "중간", "start": "2026-09-22", "end": "2026-09-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e9", "school": "서일중학교", "grade": "중3", "term": "기말", "start": "2026-11-02", "end": "2026-11-04", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e10", "school": "서일중학교", "grade": "중1", "term": "기말", "start": "2026-12-14", "end": "2026-12-16", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e11", "school": "서일중학교", "grade": "중2", "term": "기말", "start": "2026-12-14", "end": "2026-12-16", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e12", "school": "세화여자중학교", "grade": "중1", "term": "중간", "start": "2026-10-01", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e13", "school": "세화여자중학교", "grade": "중2", "term": "중간", "start": "2026-10-01", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e14", "school": "세화여자중학교", "grade": "중3", "term": "기말", "start": "2026-10-26", "end": "2026-10-29", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e15", "school": "세화여자중학교", "grade": "중1", "term": "기말", "start": "2026-12-14", "end": "2026-12-17", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e16", "school": "세화여자중학교", "grade": "중2", "term": "기말", "start": "2026-12-14", "end": "2026-12-17", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e17", "school": "경원중학교", "grade": "중1", "term": "중간", "start": "2026-10-01", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e18", "school": "경원중학교", "grade": "중2", "term": "중간", "start": "2026-10-01", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e19", "school": "경원중학교", "grade": "중3", "term": "기말", "start": "2026-11-02", "end": "2026-11-04", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e20", "school": "경원중학교", "grade": "중1", "term": "기말", "start": "2026-12-14", "end": "2026-12-16", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e21", "school": "경원중학교", "grade": "중2", "term": "기말", "start": "2026-12-14", "end": "2026-12-16", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e22", "school": "신반포중학교", "grade": "중1", "term": "중간", "start": "2026-10-26", "end": "2026-10-28", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e23", "school": "신반포중학교", "grade": "중2", "term": "중간", "start": "2026-10-26", "end": "2026-10-28", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e24", "school": "신반포중학교", "grade": "중3", "term": "중간", "start": "2026-10-26", "end": "2026-10-28", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e25", "school": "신반포중학교", "grade": "중1", "term": "기말", "start": "2026-12-21", "end": "2026-12-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e26", "school": "신반포중학교", "grade": "중2", "term": "기말", "start": "2026-12-21", "end": "2026-12-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e27", "school": "신반포중학교", "grade": "중3", "term": "기말", "start": "2026-12-21", "end": "2026-12-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e28", "school": "서초중학교", "grade": "중1", "term": "중간", "start": "2026-09-21", "end": "2026-09-22", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e29", "school": "서초중학교", "grade": "중3", "term": "기말", "start": "2026-10-28", "end": "2026-10-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e30", "school": "서초중학교", "grade": "중1", "term": "기말", "start": "2026-12-16", "end": "2026-12-17", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e31", "school": "서운중학교", "grade": "중1", "term": "중간", "start": "2026-09-21", "end": "2026-09-22", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e32", "school": "서운중학교", "grade": "중2", "term": "중간", "start": "2026-09-21", "end": "2026-09-22", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e33", "school": "서운중학교", "grade": "중3", "term": "기말", "start": "2026-10-28", "end": "2026-10-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e34", "school": "서운중학교", "grade": "중1", "term": "기말", "start": "2026-12-16", "end": "2026-12-18", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e35", "school": "서운중학교", "grade": "중2", "term": "기말", "start": "2026-12-16", "end": "2026-12-18", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e36", "school": "방배중학교", "grade": "중1", "term": "중간", "start": "2026-10-20", "end": "2026-10-21", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e37", "school": "방배중학교", "grade": "중2", "term": "중간", "start": "2026-10-20", "end": "2026-10-21", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e38", "school": "방배중학교", "grade": "중3", "term": "기말", "start": "2026-11-03", "end": "2026-11-06", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e39", "school": "방배중학교", "grade": "중1", "term": "기말", "start": "2026-12-15", "end": "2026-12-17", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e40", "school": "방배중학교", "grade": "중2", "term": "기말", "start": "2026-12-15", "end": "2026-12-17", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e41", "school": "대치중학교", "grade": "중2", "term": "중간", "start": "2026-09-28", "end": "2026-09-29", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e42", "school": "대치중학교", "grade": "중2", "term": "기말", "start": "2026-12-07", "end": "2026-12-09", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e43", "school": "동덕여자중학교", "grade": "중1", "term": "중간", "start": "2026-09-28", "end": "2026-09-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e44", "school": "동덕여자중학교", "grade": "중1", "term": "기말", "start": "2026-12-08", "end": "2026-12-10", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e45", "school": "서문여자중학교", "grade": "중2", "term": "중간", "start": "2026-09-30", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e46", "school": "서문여자중학교", "grade": "중2", "term": "기말", "start": "2026-12-11", "end": "2026-12-15", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e47", "school": "숭의여자중학교", "grade": "중2", "term": "중간", "start": "2026-09-30", "end": "2026-10-01", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e48", "school": "숭의여자중학교", "grade": "중3", "term": "기말", "start": "2026-10-27", "end": "2026-10-29", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e49", "school": "숭의여자중학교", "grade": "중2", "term": "기말", "start": "2026-12-08", "end": "2026-12-10", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e50", "school": "동작중학교", "grade": "중3", "term": "기말", "start": "2026-11-02", "end": "2026-11-04", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e51", "school": "동양중학교", "grade": "중3", "term": "기말", "start": "2026-11-02", "end": "2026-11-04", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e52", "school": "아현중학교", "grade": "중2", "term": "중간", "start": "2026-10-26", "end": "2026-10-27", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e53", "school": "아현중학교", "grade": "중2", "term": "기말", "start": "2026-12-21", "end": "2026-12-23", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e54", "school": "한강중학교", "grade": "중3", "term": "기말", "start": "2026-10-28", "end": "2026-10-30", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e55", "school": "신동중학교", "grade": "중3", "term": "기말", "start": "2026-11-19", "end": "2026-11-19", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e56", "school": "세화고등학교", "grade": "고1", "term": "중간", "start": "2026-09-30", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e57", "school": "세화고등학교", "grade": "고2", "term": "중간", "start": "2026-09-30", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e58", "school": "세화고등학교", "grade": "고1", "term": "중간", "start": "2026-10-06", "end": "2026-10-07", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e59", "school": "세화고등학교", "grade": "고2", "term": "중간", "start": "2026-10-06", "end": "2026-10-07", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e60", "school": "세화고등학교", "grade": "고1", "term": "기말", "start": "2026-12-09", "end": "2026-12-15", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e61", "school": "세화고등학교", "grade": "고2", "term": "기말", "start": "2026-12-09", "end": "2026-12-15", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e62", "school": "상문고등학교", "grade": "고1", "term": "중간", "start": "2026-09-30", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e63", "school": "상문고등학교", "grade": "고2", "term": "중간", "start": "2026-09-30", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e64", "school": "상문고등학교", "grade": "고1", "term": "중간", "start": "2026-10-06", "end": "2026-10-07", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e65", "school": "상문고등학교", "grade": "고2", "term": "중간", "start": "2026-10-06", "end": "2026-10-07", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e66", "school": "상문고등학교", "grade": "고1", "term": "기말", "start": "2026-12-04", "end": "2026-12-10", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e67", "school": "상문고등학교", "grade": "고2", "term": "기말", "start": "2026-12-04", "end": "2026-12-10", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e68", "school": "동덕여자고등학교", "grade": "고1", "term": "중간", "start": "2026-09-30", "end": "2026-10-02", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e69", "school": "동덕여자고등학교", "grade": "고1", "term": "중간", "start": "2026-10-06", "end": "2026-10-07", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e70", "school": "동덕여자고등학교", "grade": "고1", "term": "기말", "start": "2026-12-08", "end": "2026-12-14", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e71", "school": "서울고등학교", "grade": "고1", "term": "중간", "start": "2026-10-06", "end": "2026-10-08", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e72", "school": "서울고등학교", "grade": "고1", "term": "중간", "start": "2026-10-12", "end": "2026-10-13", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e73", "school": "서울고등학교", "grade": "고1", "term": "기말", "start": "2026-12-09", "end": "2026-12-15", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e74", "school": "용산고등학교", "grade": "고1", "term": "중간", "start": "2026-10-01", "end": "2026-10-08", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e75", "school": "용산고등학교", "grade": "고1", "term": "기말", "start": "2026-12-10", "end": "2026-12-16", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e76", "school": "청담고등학교", "grade": "고2", "term": "중간", "start": "2026-10-12", "end": "2026-10-15", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e77", "school": "청담고등학교", "grade": "고2", "term": "기말", "start": "2026-12-07", "end": "2026-12-11", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e78", "school": "성암국제무역고등학교", "grade": "고1", "term": "중간", "start": "2026-10-15", "end": "2026-10-19", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}, {"id": "e79", "school": "성암국제무역고등학교", "grade": "고1", "term": "기말", "start": "2026-12-14", "end": "2026-12-17", "mathDate": "", "scope": "", "print": "", "notice": "", "by": "학사일정(NEIS)", "ts": "2026-08-26", "seed": true, "confirmed": false}], "overrides": {}, "teachers": ["강지성T", "박유경T", "성민주T", "성창훈T", "이다인T", "이수진T", "이영운T", "이정수T", "정서현T", "황동규T"], "schools": ["KIS(중등)", "경원중학교", "대치중학교", "동덕여자고등학교", "동덕여자중학교", "동양중학교", "동작중학교", "민족사관고등학교", "반포고등학교", "방배중학교", "상문고등학교", "상현중학교", "서문여자중학교", "서운중학교", "서울고등학교", "서일중학교", "서초중학교", "성암국제무역고등학교", "세화고등학교", "세화여자고등학교", "세화여자중학교", "숭의여자중학교", "신동중학교", "신반포중학교", "아현중학교", "예원학교", "오산중학교", "용강중학교", "용산고등학교", "원촌중학교", "이수중학교", "이화여자외국어고등학교", "장승중학교", "청담고등학교", "한강중학교"], "holidays": {"2026-09-24": "추석 연휴", "2026-09-25": "추석", "2026-09-26": "추석 연휴", "2026-10-03": "개천절", "2026-10-05": "대체공휴일", "2026-10-09": "한글날", "2026-11-19": "수능일(대부분 휴업)", "2026-12-25": "성탄절"}, "nodata": ["세화여자고등학교", "반포고등학교", "이수중학교", "오산중학교", "용강중학교", "예원학교", "이화여자외국어고등학교", "장승중학교", "민족사관고등학교", "상현중학교", "KIS(중등)"], "rules": {"makeupSunday": "shift", "classOnLastDay": true}, "updated": "", "skips": {"원촌중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "세화여자중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "경원중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "서초중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "서운중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "방배중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "숭의여자중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "동작중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "동양중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}, "한강중학교|중3|중간": {"reason": "중3 중간 미실시 — 초기 배치, 담당 학생 확인 필요", "by": "학사일정(NEIS)", "ts": "2026-08-26"}}}</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getDatabase, ref, onValue, set, update, remove, get }
+  from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+/* ============================================================
+   1) 아래 firebaseConfig 를 본인 프로젝트 값으로 바꾸세요.
+      Firebase 콘솔 > 프로젝트 설정 > 내 앱 > SDK 설정 및 구성
+   2) ROOM 은 데이터가 저장될 폴더 이름입니다. 학기마다 바꾸면
+      이전 학기 데이터를 그대로 보관할 수 있습니다.
+   ============================================================ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyDUhlkvxjpa7271y_GzV5cEBKiKkOWoKh8",
+  authDomain:        "kladi-sync.firebaseapp.com",
+  databaseURL:       "https://kladi-sync-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "kladi-sync",
+  storageBucket:     "kladi-sync.firebasestorage.app",
+  messagingSenderId: "1093184650233",
+  appId:             "1:1093184650233:web:9ebd8e6938732838d45b28"
+};
+const ROOM = "kladi-2026-2";
+/* ========================================================== */
+
+const seed = JSON.parse(document.getElementById('state').textContent);
+const configured = !/YOUR_/.test(firebaseConfig.databaseURL||'YOUR_');
+
+function banner(text, kind){
+  const d=document.createElement('div');
+  d.className='fbbanner '+(kind||'warn'); d.innerHTML=text;
+  document.body.insertBefore(d, document.body.firstChild);
+}
+
+if(!configured){
+  banner('<b>Firebase 설정 전입니다.</b> 지금은 입력 내용이 <b>이 브라우저에만</b> 저장되고 다른 선생님과 공유되지 않습니다. '
+    +'index.html 상단의 <code>firebaseConfig</code> 를 채우면 실시간 공유가 켜집니다.', 'info');
+} else {
+  const appFb = initializeApp(firebaseConfig);
+  const db    = getDatabase(appFb);
+  const auth  = getAuth(appFb);
+  const R     = (p)=>ref(db, ROOM+(p?'/'+p:''));
+  let booted  = false;
+
+  const asMap = (arr,k)=>{const o={};(arr||[]).forEach(x=>o[x[k]]=x);return o};
+  const asArr = (obj)=>obj?Object.keys(obj).map(k=>obj[k]):[];
+
+  const store = {
+    async init(){
+      await signInAnonymously(auth).catch(()=>{});
+      const snap = await get(R());
+      if(!snap.exists()){
+        await set(R(), {
+          students: asMap(seed.students,'id'),
+          entries:  asMap(seed.entries,'id'),
+          overrides:{}, skips:{}, schools:seed.schools, updated:''
+        });
+      }
+      onValue(R(), (s)=>{
+        const v = s.val(); if(!v) return;
+        window.KLADI_APPLY({
+          students: asArr(v.students).sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true})),
+          entries:  asArr(v.entries),
+          overrides: (function(o){const r={};Object.keys(o||{}).forEach(k=>r[decodeURIComponent(k)]=o[k]);return r})(v.overrides),
+          schools:  v.schools||seed.schools,
+          updated:  v.updated||''
+        });
+        booted = true;
+      }, (err)=>banner('데이터베이스 연결 실패: '+err.message));
+    },
+    async save(patch, S){
+      const stamp = { updated: S.updated };
+      if(!patch) { await update(R(), stamp); return; }
+      if(patch.t==='entry')    await update(R(), {['entries/'+patch.e.id]: patch.e, ...stamp});
+      else if(patch.t==='delEntry') { await remove(R('entries/'+patch.id)); await update(R(), stamp); }
+      else if(patch.t==='confirm'){
+        const u={...stamp}; Object.keys(patch.ids).forEach(id=>u['entries/'+id+'/confirmed']=patch.ids[id]);
+        await update(R(), u);
+      }
+      else if(patch.t==='ov'){
+        if(patch.v) await update(R(), {['overrides/'+encodeURIComponent(patch.key)]: patch.v, ...stamp});
+        else { await remove(R('overrides/'+encodeURIComponent(patch.key))); await update(R(), stamp); }
+      }
+      else if(patch.t==='skip'){
+        if(patch.v) await update(R(), {['skips/'+encodeURIComponent(patch.key)]: patch.v, ...stamp});
+        else { await remove(R('skips/'+encodeURIComponent(patch.key))); await update(R(), stamp); }
+      }
+      else if(patch.t==='stu'){
+        const u={['students/'+patch.s.id]: patch.s, ...stamp};
+        if(patch.schools) u.schools = patch.schools;
+        await update(R(), u);
+      }
+      else await update(R(), stamp);
+    }
+  };
+  window.KLADI_ATTACH(store);
+}
+</script>
+<script id="app">(function(){
+"use strict";
+var S=JSON.parse(document.getElementById('state').textContent);
+var cap=null, ro=false, busy=false, msg='';
+var STORE=window.KLADI_STORE||null;
+var DL=null;
+var LKEY='kladi_sync_state_v1', LOCAL=false;
+S.skips=S.skips||{};
+var topSchool=(function(){var c={};S.students.forEach(function(x){if(x.active)c[x.school]=(c[x.school]||0)+1});
+ return Object.keys(c).sort(function(a,b){return c[b]-c[a]})[0]||S.schools[0]})();
+var ui={tab:'cal',month:9,school:topSchool,repMode:'school',repScope:'전체',teacher:'전체',from:'2026-09-21',to:'2026-10-02',
+        modal:null,editing:null,stuFilter:'전체',stuQ:''};
+var WD='일월화수목금토';
+var root=document.getElementById('root');
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function D(s){var p=String(s).split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function add(d,n){var x=new Date(d.getTime());x.setDate(x.getDate()+n);return x}
+function md(s){if(!s)return'';var d=D(s);return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'}
+function shortSchool(s){return s.replace('여자','여').replace('등학교','').replace('학교','').replace('국제무역','')}
+function uid(p){return p+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3)}
+
+/* ---------- 데이터 파생 ---------- */
+function keyOf(e){return e.school+'|'+e.grade+'|'+e.term}
+function groups(){var g={};S.entries.forEach(function(e){(g[keyOf(e)]=g[keyOf(e)]||[]).push(e)});return g}
+function eff(list){
+ var conf=list.filter(function(e){return e.confirmed});
+ var base=conf.length?conf[conf.length-1]:list[list.length-1];
+ var fields=['start','end','mathDate','scope','print'];
+ var conflict=false, diffs={};
+ fields.forEach(function(f){
+   var vals=list.map(function(e){return (e[f]||'').trim()}).filter(Boolean);
+   var uniq=vals.filter(function(v,i){return vals.indexOf(v)===i});
+   if(uniq.length>1){if(!conf.length)conflict=true;diffs[f]=uniq}
+ });
+ var o={};fields.concat(['notice']).forEach(function(f){
+   o[f]=(base[f]||'');
+   if(!o[f]){for(var i=list.length-1;i>=0;i--){if(list[i][f]){o[f]=list[i][f];break}}}
+ });
+ o.conflict=conflict;o.diffs=diffs;o.confirmed=!!conf.length;o.list=list;
+ o.school=base.school;o.grade=base.grade;o.term=base.term;o.key=keyOf(base);
+ return o;
+}
+function allEff(){var g=groups(),out=[];for(var k in g)out.push(eff(g[k]));
+ out.sort(function(a,b){return (a.start||'9').localeCompare(b.start||'9')});return out}
+function conflicts(){return allEff().filter(function(e){return e.conflict&&!isSkipped(e)})}
+function stuOf(school,grade){return S.students.filter(function(s){return s.active&&s.school===school&&s.grade===grade})}
+function makeupOf(e){
+ if(S.overrides[e.key]!==undefined)return S.overrides[e.key];
+ if(!e.mathDate)return '';
+ var d=add(D(e.mathDate),-1);
+ if(d.getDay()===0)d=add(d,-1);
+ return iso(d);
+}
+function isM3(e){return e.grade==='중3'&&e.term==='기말'}
+function skipOf(k){return S.skips[k]||null}
+function isSkipped(e){return !!S.skips[e.school+'|'+e.grade+'|'+e.term]}
+function skipKeys(){return Object.keys(S.skips).filter(function(k){
+  var p=k.split('|');return S.students.some(function(s){return s.active&&s.school===p[0]&&s.grade===p[1]})})}
+
+/* ---------- 저장 ---------- */
+function pageHTML(){
+ var css=$('css').textContent, app=$('app').textContent;
+ var json=JSON.stringify(S).replace(/</g,'\\u003c');
+ return '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
+ +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+ +'<title>Kladi Sync</title>'
+ +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">'
+ +'<style id="css">'+css+'</style></head><body><div id="root"></div>'
+ +'<script id="state" type="application/json">'+json+'<\/script>'
+ +'<script id="app">'+app+'<\/script></body></html>';
+}
+function saveLocal(){
+ try{localStorage.setItem(LKEY,JSON.stringify(S));return true}catch(e){return false}
+}
+function save(patch){
+ if(ro){msg='보기 전용 링크라 저장할 수 없습니다.';render();return}
+ S.updated=new Date().toISOString().slice(0,16).replace('T',' ');
+ if(!STORE&&!cap){
+   LOCAL=true;msg=saveLocal()?'이 브라우저에 저장됨':'저장 실패 — 브라우저 저장 공간을 사용할 수 없습니다.';render();return;
+ }
+ if(STORE){
+   busy=true;msg='저장 중…';render();
+   Promise.resolve(STORE.save(patch,S)).then(function(){busy=false;msg='저장됨';render()})
+   .catch(function(e){busy=false;msg='저장 실패: '+(e&&e.message||e);render()});
+   return;
+ }
+ busy=true;msg='저장 중…';render();
+ cap.publish(pageHTML()).then(function(){busy=false;msg='저장됨';render()})
+ .catch(function(err){
+   busy=false;
+   var c=err&&err.code;
+   if(c==='conflict'){msg='다른 선생님이 먼저 저장했습니다. 화면이 최신본으로 새로고침됩니다.'}
+   else if(c==='not_writer'||c==='not_granted'||c==='consent_required'||c==='capability_disabled'){ro=true;msg='보기 전용 링크입니다.'}
+   else if(c==='rate_limited'){msg='저장이 잦습니다. 잠시 후 다시 눌러 주세요.'}
+   else{msg='저장 실패: '+(err&&err.message||c||'알 수 없는 오류')}
+   render();
+ });
+}
+window.KLADI_APPLY=function(next){
+ if(!next)return;
+ S.students=next.students||S.students; S.entries=next.entries||S.entries;
+ S.overrides=next.overrides||{}; S.skips=next.skips||{}; S.updated=next.updated||S.updated;
+ if(next.schools)S.schools=next.schools;
+ render();
+};
+/* ---------- 진행률 ---------- */
+var FIELDS=[['start','시험기간'],['mathDate','수학시험일'],['scope','시험범위'],['print','프린트'],['notice','학교안내']];
+function targets(){return allEff().filter(function(e){return stuOf(e.school,e.grade).length>0&&!isSkipped(e)})}
+function fillOf(e){var n=0;FIELDS.forEach(function(f){
+  var v=(f[0]==='start')?(e.start&&e.end):e[f[0]];if(v)n++});return n}
+function missingOf(e){var m=[];FIELDS.forEach(function(f){
+  var v=(f[0]==='start')?(e.start&&e.end):e[f[0]];if(!v)m.push(f[1])});return m}
+function noSchedule(){
+  var g=groups(),pairs={},out=[];
+  S.students.forEach(function(s){if(s.active)pairs[s.school+'|'+s.grade]=(pairs[s.school+'|'+s.grade]||0)+1});
+  Object.keys(pairs).forEach(function(p){
+    var any=Object.keys(g).some(function(k){return k.indexOf(p+'|')===0&&!S.skips[k]});
+    var allSkipped=['중간','기말'].every(function(tm){return !!S.skips[p+'|'+tm]});
+    if(!any&&!allSkipped)out.push({school:p.split('|')[0],grade:p.split('|')[1],n:pairs[p]});
+  });
+  return out.sort(function(a,b){return b.n-a.n});
+}
+function bar(pct,tone){
+  return '<span class="bar2"><i style="width:'+Math.round(pct)+'%;background:'+
+   (pct>=100?'var(--ok)':pct>=50?'var(--mid)':'var(--warn)')+'"></i></span>'
+   +'<span class="cnt" style="margin-left:6px">'+Math.round(pct)+'%</span>';
+}
+function csv(rows){
+  return '﻿'+rows.map(function(r){return r.map(function(c){
+    c=(c==null?'':String(c));return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(',')}).join('\r\n');
+}
+function dl(name,text){
+  if(DL){DL.save({filename:name,data:text}).then(function(){msg='저장됨';render()})
+    .catch(function(e){
+      if(e&&e.code==='extension_not_enabled'){DL.save({filename:name.replace(/\.csv$/,'.txt'),data:text})
+        .then(function(){msg='저장됨';render()}).catch(function(){msg='다운로드가 취소되었습니다.';render()})}
+      else{msg=(e&&e.code==='declined')?'다운로드가 취소되었습니다.':'다운로드 불가: '+((e&&e.code)||'');render()}
+    });return}
+  try{
+    var b=new Blob([text],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');
+    a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1500);
+  }catch(err){msg='다운로드를 지원하지 않는 화면입니다.';render()}
+}
+
+/* ---------- 시간표 로직 ---------- */
+function planFor(fromISO,toISO,teacher){
+ var effs=allEff().filter(function(e){return e.start&&e.end&&!isSkipped(e)});
+ var byKey={};effs.forEach(function(e){byKey[e.school+'|'+e.grade]=byKey[e.school+'|'+e.grade]||[];byKey[e.school+'|'+e.grade].push(e)});
+ var out=[],d=D(fromISO),end=D(toISO),guard=0;
+ var pool=S.students.filter(function(s){return s.active&&(teacher==='전체'||s.teacher===teacher)});
+ while(d<=end&&guard++<200){
+   var day={date:iso(d),dow:d.getDay(),ab:[],rg:[],mk:[],hol:S.holidays[iso(d)]||''};
+   pool.forEach(function(s){
+     var list=byKey[s.school+'|'+s.grade]||[];
+     var isClass=s.days.indexOf(d.getDay())>=0;
+     var state=null,note='';
+     for(var i=0;i<list.length;i++){
+       var e=list[i],mk=makeupOf(e);
+       if(mk&&mk===iso(d)){state='mk';note=e.term+' 수학 '+md(e.mathDate);break}
+     }
+     if(!state&&isClass){
+       for(var j=0;j<list.length;j++){
+         var e2=list[j];
+         if(iso(d)>=e2.start&&iso(d)<=e2.end){
+           state=(iso(d)===e2.end)?'rg':'ab';
+           note=e2.term+' '+md(e2.start)+'~'+md(e2.end)+(iso(d)===e2.end?' 종료일':'');
+           break;
+         }
+       }
+       if(!state){state='rg';note='정규'}
+     }
+     if(state==='mk')day.mk.push({s:s,note:note});
+     else if(state==='ab')day.ab.push({s:s,note:note});
+     else if(state==='rg')day.rg.push({s:s,note:note});
+   });
+   out.push(day);d=add(d,1);
+ }
+ return out;
+}
+
+/* ---------- 렌더 ---------- */
+function head(){
+ var nc=conflicts().length;
+ var noDays=S.students.filter(function(s){return s.active&&!s.days.length}).length;
+ var tabs=[['cal','캘린더'],['input','시험정보 입력'],['conf','정보 충돌'+(nc?'<span class="b">'+nc+'</span>':'')],
+           ['stu','학생 관리'+(noDays?'<span class="b">'+noDays+'</span>':'')],['ops','수업 운영표'],
+           ['prog','입력 현황'],['rep','출력']];
+ return '<div class="top"><div><div class="eyebrow">KLADI 학원 · 2026학년도 2학기</div>'
+ +'<h1>Kladi Sync <span class="tagline">시험 정보 · 수업 운영 관제</span></h1></div>'
+ +'<div class="savebox">'+(S.updated?'<span class="mono">최종 저장 '+esc(S.updated)+'</span>':'')
+ +(msg?'<span class="pill '+(busy?'':(/실패|충돌|읽기|다른/.test(msg)?'warn':'ok'))+'">'+esc(msg)+'</span>':'')+'</div></div>'
+ +(ro?'<div class="banner warn">보기 전용 링크로 열려 있어 입력 내용이 저장되지 않습니다. 편집 가능한 링크로 다시 열어 주세요.</div>':'')
+ +'<div class="tabs">'+tabs.map(function(t){
+   return '<button class="tab" data-act="tab" data-v="'+t[0]+'" aria-selected="'+(ui.tab===t[0])+'">'+t[1]+'</button>'}).join('')+'</div>';
+}
+
+function calView(){
+ var m=ui.month,effs=allEff().filter(function(e){return e.start&&e.end&&!isSkipped(e)});
+ var first=new Date(2026,m-1,1),last=new Date(2026,m,0);
+ var st=add(first,-((first.getDay()+6)%7)),en=add(last,(7-((last.getDay()+6)%7))%7);
+ var h='<div class="bar">'+[9,10,11,12].map(function(x){
+   return '<button class="btn '+(x===m?'':'sec')+' sm" data-act="month" data-v="'+x+'">'+x+'월</button>'}).join('')
+   +'<span class="small">기간 막대를 클릭하면 상세, 수학 배지를 클릭하면 학생 명단이 열립니다.</span></div>';
+ h+='<div class="scroller"><div class="grid7">';
+ '월화수목금토일'.split('').forEach(function(w,i){h+='<div class="dow'+(i===5?' sat':i===6?' sun':'')+'">'+w+'</div>'});
+ for(var d=new Date(st.getTime());d<=en;d=add(d,1)){
+   var k=iso(d),out=d.getMonth()!==m-1,hol=S.holidays[k];
+   h+='<div class="day'+(out?' out':(hol?' hol':(d.getDay()===0||d.getDay()===6?' we':'')))+'">';
+   h+='<div class="dnum">'+d.getDate()+(hol&&!out?'<span class="holtag">'+esc(hol)+'</span>':'')+'</div>';
+   if(!out){
+     var here=effs.filter(function(e){return k>=e.start&&k<=e.end});
+     here.sort(function(a,b){return stuOf(b.school,b.grade).length-stuOf(a.school,a.grade).length});
+     here.forEach(function(e){
+       var n=stuOf(e.school,e.grade).length;if(!n)return;
+       h+='<button class="ch '+(isM3(e)?'m3':e.term)+'" data-act="detail" data-k="'+esc(e.key)+'" style="border:0;border-left:3px solid;width:100%;text-align:left;cursor:pointer;font:inherit">'
+        +(e.conflict?'<span class="warnpin">⚠ </span>':'')+esc(shortSchool(e.school))+' <span class="g">'+esc(e.grade)+' '+esc(e.term)+'</span> <span class="cnt" style="float:right">'+n+'</span></button>';
+     });
+     var mathHere=effs.filter(function(e){return e.mathDate===k});
+     mathHere.forEach(function(e){
+       var n=stuOf(e.school,e.grade).length;if(!n)return;
+       h+='<button class="mathbtn" data-act="math" data-k="'+esc(e.key)+'">수학 '+esc(shortSchool(e.school))+' '+esc(e.grade)+' · '+n+'명</button>';
+     });
+     var mkHere=effs.filter(function(e){return makeupOf(e)===k});
+     mkHere.forEach(function(e){
+       var n=stuOf(e.school,e.grade).length;if(!n)return;
+       h+='<span class="small" style="color:var(--m3)">직전보강 '+esc(shortSchool(e.school))+' '+esc(e.grade)+' · '+n+'명</span>';
+     });
+   }
+   h+='</div>';
+ }
+ h+='</div></div>';
+ var noMath=effs.filter(function(e){return !e.mathDate&&stuOf(e.school,e.grade).length});
+ h+='<div class="cols"><div class="card"><h3 style="margin:0 0 8px;font-size:15px">수학 시험일 미입력 <span class="pill warn">'+noMath.length+'</span></h3>'
+  +'<div class="small">'+ (noMath.length? noMath.slice(0,40).map(function(e){return esc(shortSchool(e.school)+' '+e.grade+' '+e.term)}).join(' · '):'모두 입력되었습니다.')+'</div></div>'
+  +'<div class="card"><h3 style="margin:0 0 8px;font-size:15px">일정 미확보 학교</h3><div class="small">'
+  +S.nodata.map(function(s){return esc(s)}).join(' · ')+'</div></div></div>';
+ return h;
+}
+
+function inputView(){
+ var sc=ui.school;
+ var grades=[];S.students.forEach(function(s){if(s.active&&s.school===sc&&grades.indexOf(s.grade)<0)grades.push(s.grade)});
+ grades.sort();
+ var g=groups();
+ var h='<div class="bar"><label class="f">학교<select data-act="school">'
+  +S.schools.map(function(x){var n=S.students.filter(function(s){return s.active&&s.school===x}).length;
+    return '<option'+(x===sc?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select></label>'
+  +'<span class="small">재원생 '+S.students.filter(function(s){return s.active&&s.school===sc}).length+'명 · 학년 '+grades.join(', ')+'</span></div>';
+ var cards=[];
+ grades.forEach(function(gr){
+   ['중간','기말'].forEach(function(term){
+     var key=sc+'|'+gr+'|'+term, list=g[key];
+     var e=list?eff(list):{start:'',end:'',mathDate:'',scope:'',print:'',notice:'',conflict:false,list:[],key:key,school:sc,grade:gr,term:term};
+     var n=stuOf(sc,gr).length;
+     var sk=skipOf(key);
+     cards.push('<div class="card'+(sk?' skipped':'')+(!sk&&e.conflict?'" style="border-color:var(--warn)':'')+'">'
+      +'<div class="bar" style="justify-content:space-between"><b>'+esc(gr)+' '+esc(term)+'고사</b>'
+      +'<span>'+(sk?'<span class="pill skip">미실시</span> ':'')+(!sk&&e.conflict?'<span class="pill warn">정보 충돌</span> ':'')
+      +(!sk&&e.confirmed?'<span class="pill ok">확정</span> ':'')
+      +'<span class="pill">재원생 '+n+'명</span></span></div>'
+      +'<div class="skiprow"><label class="skipck"><input type="checkbox" data-act="skip" data-k="'+esc(key)+'"'+(sk?' checked':'')+(ro?' disabled':'')+'>'
+      +'<span>이 시험 <b>미실시</b> (수행평가 대체 등)</span></label>'
+      +'<input type="text" data-fld="skipReason" data-k="'+esc(key)+'" placeholder="사유 — 예: 수행평가로 대체" value="'+esc(sk?sk.reason:'')+'">'
+      +(sk?'<span class="small">'+esc(sk.by||'')+' '+esc(sk.ts||'')+' 표시 · 캘린더·운영표·진행률에서 제외됩니다</span>':'')+'</div>'
+      +'<div class="hr"></div>'
+      +'<div class="bar" style="align-items:flex-end">'
+      +'<label class="f">시험 시작<input type="date" data-fld="start" data-k="'+esc(key)+'" value="'+esc(e.start)+'"></label>'
+      +'<label class="f">시험 종료<input type="date" data-fld="end" data-k="'+esc(key)+'" value="'+esc(e.end)+'"></label>'
+      +'<label class="f">수학 시험일<input type="date" data-fld="mathDate" data-k="'+esc(key)+'" value="'+esc(e.mathDate)+'"></label>'
+      +'<label class="f">프린트<select data-fld="print" data-k="'+esc(key)+'">'
+      +['','배부','미배부','일부 배부'].map(function(p){return '<option'+(p===e.print?' selected':'')+'>'+(p||'미확인')+'</option>'}).join('')+'</select></label>'
+      +'<label class="f">입력 선생님<select data-fld="by" data-k="'+esc(key)+'">'+S.teachers.map(function(t){return '<option>'+esc(t)+'</option>'}).join('')+'</select></label>'
+      +'</div>'
+      +'<div style="margin-top:8px"><label class="f">시험 범위<textarea data-fld="scope" data-k="'+esc(key)+'" placeholder="예) 수학(상) 2단원 전체 ~ 3-1, 교과서 유인물 포함">'+esc(e.scope)+'</textarea></label></div>'
+      +'<div style="margin-top:8px"><label class="f">학교 안내 사항<textarea data-fld="notice" data-k="'+esc(key)+'" placeholder="예) 서술형 30%, 프린트 3종 배부, 시험 시간표 안내">'+esc(e.notice)+'</textarea></label></div>'
+      +'<div class="bar" style="margin-top:10px"><button class="btn" data-act="submit" data-k="'+esc(key)+'"'+(ro?' disabled':'')+'>입력 저장</button>'
+      +'<span class="small">직전보강 기본 '+(makeupOf(e)?md(makeupOf(e)):'—')+'</span>'
+      +'<label class="f">직전보강 조정<input type="date" data-fld="mk" data-k="'+esc(key)+'" value="'+esc(S.overrides[key]||'')+'"></label>'
+      +'<button class="btn sec sm" data-act="mk" data-k="'+esc(key)+'"'+(ro?' disabled':'')+'>보강일 적용</button></div>'
+      +(e.list.length?'<div class="small" style="margin-top:8px">입력 이력: '+e.list.map(function(x){return esc(x.by)+'('+esc(x.ts)+')'}).join(' → ')+'</div>':'')
+      +'</div>');
+   });
+ });
+ return h+'<div class="cols">'+cards.join('')+'</div>';
+}
+
+function confView(){
+ var cs=conflicts();
+ if(!cs.length)return '<div class="banner info">현재 충돌 없음. 모든 학교·학년의 입력값이 일치하거나 확정되었습니다.</div>';
+ var h='<div class="banner warn">서로 다른 정보가 입력된 항목 '+cs.length+'건입니다. 담당 학생을 통해 확인한 뒤 정확한 값을 확정해 주세요.</div>';
+ cs.forEach(function(e){
+   h+='<div class="card" style="border-color:var(--warn)"><b>'+esc(shortSchool(e.school))+' '+esc(e.grade)+' '+esc(e.term)+'고사</b> '
+    +'<span class="pill">재원생 '+stuOf(e.school,e.grade).length+'명</span>'
+    +'<div class="small" style="margin:6px 0">불일치 항목: '+Object.keys(e.diffs).map(function(f){
+       return ({start:'시작일',end:'종료일',mathDate:'수학시험일',scope:'시험범위',print:'프린트'})[f]}).join(', ')+'</div>'
+    +'<div style="overflow-x:auto"><table><tr><th>입력자</th><th>시작</th><th>종료</th><th>수학</th><th>프린트</th><th>범위</th><th></th></tr>'
+    +e.list.map(function(x){
+      return '<tr><td>'+esc(x.by)+'<div class="small">'+esc(x.ts)+'</div></td><td class="num">'+esc(md(x.start))+'</td><td class="num">'+esc(md(x.end))
+       +'</td><td class="num">'+esc(md(x.mathDate)||'—')+'</td><td>'+esc(x.print||'—')+'</td><td class="small">'+esc(x.scope||'—')+'</td>'
+       +'<td><button class="btn sm" data-act="confirm" data-id="'+esc(x.id)+'"'+(ro?' disabled':'')+'>이 값으로 확정</button> '
+       +'<button class="btn sec sm" data-act="delentry" data-id="'+esc(x.id)+'"'+(ro?' disabled':'')+'>삭제</button></td></tr>'}).join('')
+    +'</table></div></div>';
+ });
+ return h;
+}
+
+function stuView(){
+ var q=ui.stuQ.trim(), f=ui.stuFilter;
+ var list=S.students.filter(function(s){return s.active&&(f==='전체'||s.teacher===f)&&(!q||s.name.indexOf(q)>=0||s.school.indexOf(q)>=0)});
+ var noDays=S.students.filter(function(s){return s.active&&!s.days.length}).length;
+ var h='<div class="bar"><label class="f">담당 선생님<select data-act="stuFilter">'
+  +['전체'].concat(S.teachers).map(function(t){return '<option'+(t===f?' selected':'')+'>'+esc(t)+'</option>'}).join('')+'</select></label>'
+  +'<label class="f">검색<input type="text" data-act="stuQ" value="'+esc(ui.stuQ)+'" placeholder="이름 또는 학교"></label>'
+  +'<span class="small">표시 '+list.length+'명 / 전체 '+S.students.filter(function(s){return s.active}).length+'명</span>'
+  +(noDays?'<span class="pill warn">수업요일 미입력 '+noDays+'명</span>':'')+'</div>';
+ h+='<div class="card"><b style="font-size:14px">학생 추가</b><div class="bar" style="margin-top:8px;align-items:flex-end">'
+  +'<label class="f">이름<input type="text" id="na" placeholder="이름"></label>'
+  +'<label class="f">학교<input type="text" id="nsc" list="schoolList" placeholder="학교"></label>'
+  +'<datalist id="schoolList">'+S.schools.map(function(x){return '<option>'+esc(x)+'</option>'}).join('')+'</datalist>'
+  +'<label class="f">학년<select id="ng">'+['중1','중2','중3','고1','고2','고3'].map(function(g){return '<option>'+g+'</option>'}).join('')+'</select></label>'
+  +'<label class="f">담당<select id="nt">'+S.teachers.map(function(t){return '<option>'+esc(t)+'</option>'}).join('')+'</select></label>'
+  +'<label class="f">수업요일<span class="dayck">'+[1,2,3,4,5,6,0].map(function(d){
+     return '<label><input type="checkbox" class="ndc" value="'+d+'">'+WD[d]+'</label>'}).join('')+'</span></label>'
+  +'<button class="btn" data-act="addstu"'+(ro?' disabled':'')+'>추가</button></div></div>';
+ h+='<div class="scroller"><table><tr><th>이름</th><th>학교</th><th>학년</th><th>담당</th><th>수업요일</th><th></th></tr>'
+  +list.map(function(s){
+    return '<tr'+(s.days.length?'':' class="conf"')+'><td><b>'+esc(s.name)+'</b></td><td>'+esc(shortSchool(s.school))+'</td><td>'+esc(s.grade)+'</td>'
+     +'<td>'+esc(s.teacher)+'</td><td><span class="dayck">'+[1,2,3,4,5,6,0].map(function(d){
+        return '<label><input type="checkbox" data-act="days" data-id="'+s.id+'" data-v="'+d+'"'+(s.days.indexOf(d)>=0?' checked':'')+(ro?' disabled':'')+'>'+WD[d]+'</label>'}).join('')+'</span></td>'
+     +'<td><button class="btn sec sm" data-act="delstu" data-id="'+s.id+'"'+(ro?' disabled':'')+'>제거</button></td></tr>'}).join('')
+  +'</table></div>';
+ return h;
+}
+
+function opsView(){
+ var days=planFor(ui.from,ui.to,ui.teacher);
+ var tot={ab:0,rg:0,mk:0};days.forEach(function(d){tot.ab+=d.ab.length;tot.rg+=d.rg.length;tot.mk+=d.mk.length});
+ var noDays=S.students.filter(function(s){return s.active&&!s.days.length&&(ui.teacher==='전체'||s.teacher===ui.teacher)});
+ var h='<div class="bar"><label class="f">담당 선생님<select data-act="teacher">'
+  +['전체'].concat(S.teachers).map(function(t){return '<option'+(t===ui.teacher?' selected':'')+'>'+esc(t)+'</option>'}).join('')+'</select></label>'
+  +'<label class="f">시작<input type="date" data-act="from" value="'+esc(ui.from)+'"></label>'
+  +'<label class="f">종료<input type="date" data-act="to" value="'+esc(ui.to)+'"></label>'
+  +'<span class="pill warn">결석 '+tot.ab+'</span><span class="pill" style="color:var(--m3);border-color:var(--m3)">직전보강 '+tot.mk+'</span>'
+  +'<span class="pill ok">정규 '+tot.rg+'</span></div>';
+ if(noDays.length)h+='<div class="banner warn">수업요일이 입력되지 않은 학생 '+noDays.length+'명은 집계에서 빠집니다 — '
+   +noDays.slice(0,18).map(function(s){return esc(s.name)}).join(', ')+(noDays.length>18?' 외':'')+'. 학생 관리에서 입력해 주세요.</div>';
+ h+='<div class="scroller"><div style="min-width:820px"><div class="dayrow head"><div>날짜</div><div>결석 (시험 기간)</div><div>직전 보강</div><div>정규 수업</div></div>';
+ days.forEach(function(d){
+   var dd=D(d.date);
+   h+='<div class="dayrow"><div><div class="dl">'+(dd.getMonth()+1)+'/'+dd.getDate()+'('+WD[dd.getDay()]+')</div>'
+    +(d.hol?'<div class="small" style="color:var(--hol)">'+esc(d.hol)+'</div>':'')+'</div>';
+   [['ab','ab'],['mk','mk'],['rg','rg']].forEach(function(p){
+     var arr=d[p[0]];
+     h+='<div>'+(arr.length?'<div class="cnt">'+arr.length+'명</div>':'<span class="small">—</span>')
+      +arr.map(function(x){return '<span class="stu '+p[1]+'" title="'+esc(x.s.school+' '+x.s.grade+' · '+x.s.teacher+' · '+x.note)+'">'+esc(x.s.name)+'</span>'}).join('')+'</div>';
+   });
+   h+='</div>';
+ });
+ return h+'</div></div>';
+}
+
+function progView(){
+ var T=targets(),tot=T.length,filled=0,byField={};
+ FIELDS.forEach(function(f){byField[f[1]]=0});
+ T.forEach(function(e){filled+=fillOf(e);FIELDS.forEach(function(f){
+   var v=(f[0]==='start')?(e.start&&e.end):e[f[0]];if(v)byField[f[1]]++})});
+ var stu=S.students.filter(function(s){return s.active}),withDays=stu.filter(function(s){return s.days.length}).length;
+ var nc=conflicts().length,ns=noSchedule(),nk=skipKeys().length;
+ var pct=tot?filled/(tot*FIELDS.length)*100:0;
+
+ var h='<div class="cols">'
+  +'<div class="card"><div class="small">시험 정보 입력률</div><div class="big">'+Math.round(pct)+'%</div>'
+   +bar(pct)+'<div class="small" style="margin-top:6px">'+tot+'개 항목(학교×학년×시험) × 5개 필드 기준</div></div>'
+  +'<div class="card"><div class="small">수학 시험일 확보</div><div class="big">'+byField['수학시험일']+' / '+tot+'</div>'
+   +bar(tot?byField['수학시험일']/tot*100:0)+'<div class="small" style="margin-top:6px">직전보강 배정에 반드시 필요합니다</div></div>'
+  +'<div class="card"><div class="small">학생 수업요일 입력</div><div class="big">'+withDays+' / '+stu.length+'</div>'
+   +bar(stu.length?withDays/stu.length*100:0)+'<div class="small" style="margin-top:6px">미입력 학생은 운영표 집계에서 빠집니다</div></div>'
+  +'<div class="card"><div class="small">확인 필요</div><div class="big" style="color:'+(nc||ns.length?'var(--warn)':'var(--ok)')+'">'+(nc+ns.length)+'</div>'
+   +'<div class="small" style="margin-top:6px">정보 충돌 '+nc+'건 · 일정 미확보 '+ns.length+'건'+(nk?' · 미실시 '+nk+'건':'')+'</div></div>'
+  +'</div>';
+
+ h+='<div class="card"><b style="font-size:14px">필드별 입력 현황</b><div style="margin-top:10px">'
+  +FIELDS.map(function(f){var n=byField[f[1]];
+    return '<div class="frow"><span>'+f[1]+'</span>'+bar(tot?n/tot*100:0)+'<span class="cnt">'+n+'/'+tot+'</span></div>'}).join('')
+  +'</div></div>';
+
+ /* 학교별 */
+ var bySchool={};
+ T.forEach(function(e){(bySchool[e.school]=bySchool[e.school]||[]).push(e)});
+ var rows=Object.keys(bySchool).map(function(sc){
+   var list=bySchool[sc],f=0;list.forEach(function(e){f+=fillOf(e)});
+   var st=S.students.filter(function(x){return x.active&&x.school===sc});
+   var wd=st.filter(function(x){return x.days.length}).length;
+   var miss={};list.forEach(function(e){missingOf(e).forEach(function(m){miss[m]=(miss[m]||0)+1})});
+   var last='';list.forEach(function(e){e.list.forEach(function(x){if(!x.seed&&x.ts>last){last=x.ts+' '+x.by}})});
+   return {sc:sc,n:st.length,keys:list.length,pct:f/(list.length*FIELDS.length)*100,
+           wd:wd,miss:Object.keys(miss).map(function(m){return m+'('+miss[m]+')'}).join(' '),last:last,
+           conf:list.some(function(e){return e.conflict})};
+ }).sort(function(a,b){return a.pct-b.pct||b.n-a.n});
+ h+='<div class="card" style="padding:0"><div style="padding:14px 18px 6px"><b style="font-size:14px">학교별 입력 현황</b> '
+  +'<span class="small">입력이 덜 된 학교부터 표시됩니다</span></div><div class="scroller" style="border:0">'
+  +'<table><tr><th>학교</th><th>재원생</th><th>항목</th><th>시험정보</th><th>수업요일</th><th>미입력 필드</th><th>최근 입력</th></tr>'
+  +rows.map(function(r){
+    return '<tr'+(r.conf?' class="conf"':'')+'><td><b>'+esc(shortSchool(r.sc))+'</b>'+(r.conf?' <span class="pill warn">충돌</span>':'')+'</td>'
+     +'<td class="num">'+r.n+'</td><td class="num">'+r.keys+'</td><td style="min-width:150px">'+bar(r.pct)+'</td>'
+     +'<td style="min-width:140px">'+bar(r.n?r.wd/r.n*100:0)+'</td>'
+     +'<td class="small">'+esc(r.miss||'—')+'</td><td class="small">'+esc(r.last||'—')+'</td></tr>'}).join('')
+  +'</table></div></div>';
+
+ /* 선생님별 */
+ var byT=S.teachers.map(function(t){
+   var st=S.students.filter(function(x){return x.active&&x.teacher===t});
+   var wd=st.filter(function(x){return x.days.length}).length;
+   var pairs={};st.forEach(function(x){pairs[x.school+'|'+x.grade]=1});
+   var ks=T.filter(function(e){return pairs[e.school+'|'+e.grade]});
+   var f=0;ks.forEach(function(e){f+=fillOf(e)});
+   var mine=0;S.entries.forEach(function(e){if(!e.seed&&e.by===t)mine++});
+   return {t:t,n:st.length,wd:wd,pct:ks.length?f/(ks.length*FIELDS.length)*100:0,ks:ks.length,mine:mine};
+ }).sort(function(a,b){return a.wd/(a.n||1)-b.wd/(b.n||1)});
+ h+='<div class="card" style="padding:0"><div style="padding:14px 18px 6px"><b style="font-size:14px">선생님별 진행</b> '
+  +'<span class="small">담당 학생의 수업요일 입력률 낮은 순</span></div><div class="scroller" style="border:0">'
+  +'<table><tr><th>선생님</th><th>담당</th><th>수업요일 입력</th><th>담당 학교 시험정보</th><th>직접 입력 건수</th></tr>'
+  +byT.map(function(r){return '<tr><td><b>'+esc(r.t)+'</b></td><td class="num">'+r.n+'명</td>'
+    +'<td style="min-width:150px">'+bar(r.n?r.wd/r.n*100:0)+' <span class="cnt">'+r.wd+'/'+r.n+'</span></td>'
+    +'<td style="min-width:150px">'+bar(r.pct)+'</td><td class="num">'+r.mine+'</td></tr>'}).join('')
+  +'</table></div></div>';
+
+ if(ns.length)h+='<div class="card" style="border-color:var(--warn)"><b style="font-size:14px">시험일정 미확보 '+ns.length+'건</b>'
+  +'<div class="small" style="margin-top:6px">NEIS에 일정이 없는 학교입니다. 담당 학생을 통해 확인 후 시험정보 입력 탭에서 직접 넣어 주세요.</div>'
+  +'<div style="margin-top:8px">'+ns.map(function(x){return '<span class="stu ab">'+esc(shortSchool(x.school))+' '+esc(x.grade)+' · '+x.n+'명</span>'}).join('')+'</div></div>';
+ return h;
+}
+
+function repRows(){
+ var mode=ui.repMode,sc=ui.repScope;
+ if(mode==='school'){
+   var T=targets().filter(function(e){return sc==='전체'||e.school===sc});
+   T.sort(function(a,b){return (a.start||'9').localeCompare(b.start||'9')});
+   var head=['학교','학년','시험','시험기간','일수','수학시험일','직전보강','프린트','재원생','시험범위','학교 안내','입력자','상태'];
+   var skipRows=skipKeys().filter(function(k){return sc==='전체'||k.split('|')[0]===sc}).map(function(k){
+     var p=k.split('|'),v=S.skips[k];
+     return [p[0],p[1],p[2]+'고사','미실시','', '', '', '', stuOf(p[0],p[1]).length, (v.reason||'수행평가 대체'), '', (v.by||''), '미실시'];
+   });
+   var rows=T.map(function(e){
+     var d1=e.start?D(e.start):null,d2=e.end?D(e.end):null;
+     var days=(d1&&d2)?Math.round((d2-d1)/86400000)+1:'';
+     var last=e.list[e.list.length-1];
+     return [e.school,e.grade,e.term+'고사',(e.start?md(e.start)+(e.end&&e.end!==e.start?' ~ '+md(e.end):''):''),days,
+             md(e.mathDate),md(makeupOf(e)),e.print,stuOf(e.school,e.grade).length,e.scope,e.notice,
+             (last?last.by:''),(e.conflict?'충돌':(e.confirmed?'확정':(fillOf(e)===5?'완료':'입력중')))];
+   });
+   return {head:head,rows:rows.concat(skipRows),title:'학교별 시험 정보'};
+ }
+ var T2=targets();var byPair={};
+ T2.forEach(function(e){(byPair[e.school+'|'+e.grade]=byPair[e.school+'|'+e.grade]||[]).push(e)});
+ var head2=['이름','학교','학년','담당','수업요일','시험','시험기간','수학시험일','직전보강','시험범위'];
+ var rows2=[];
+ S.students.filter(function(s){return s.active&&(sc==='전체'||s.teacher===sc)})
+  .sort(function(a,b){return a.teacher.localeCompare(b.teacher)||a.school.localeCompare(b.school)||a.name.localeCompare(b.name)})
+  .forEach(function(s){
+   var ks=byPair[s.school+'|'+s.grade]||[];
+   var dstr=s.days.length?s.days.slice().sort().map(function(d){return WD[d]}).join('·'):'미입력';
+   var sks=['중간','기말'].filter(function(tm){return S.skips[s.school+'|'+s.grade+'|'+tm]});
+   if(!ks.length){
+     if(sks.length){sks.forEach(function(tm,i){rows2.push([i?'':s.name,i?'':s.school,i?'':s.grade,i?'':s.teacher,i?'':dstr,
+       tm+'고사','미실시','','',(S.skips[s.school+'|'+s.grade+'|'+tm].reason||'수행평가 대체')])})}
+     else rows2.push([s.name,s.school,s.grade,s.teacher,dstr,'일정 미확보','','','','']);
+     return}
+   sks.forEach(function(tm){rows2.push([s.name,s.school,s.grade,s.teacher,dstr,tm+'고사','미실시','','',
+     (S.skips[s.school+'|'+s.grade+'|'+tm].reason||'수행평가 대체')])});
+   ks.sort(function(a,b){return (a.start||'9').localeCompare(b.start||'9')}).forEach(function(e,i){
+     var j=i+sks.length;
+     rows2.push([j?'':s.name,j?'':s.school,j?'':s.grade,j?'':s.teacher,j?'':dstr,e.term+'고사',
+       (e.start?md(e.start)+' ~ '+md(e.end):''),md(e.mathDate),md(makeupOf(e)),e.scope]);
+   });
+ });
+ return {head:head2,rows:rows2,title:'학생별 시험 일정'};
+}
+
+function repView(){
+ var r=repRows();
+ var scopes=(ui.repMode==='school')?['전체'].concat(S.schools.filter(function(x){
+     return S.students.some(function(s){return s.active&&s.school===x})})) : ['전체'].concat(S.teachers);
+ if(scopes.indexOf(ui.repScope)<0)ui.repScope='전체';
+ var h='<div class="bar noprint">'
+  +'<label class="f">출력 종류<select data-act="repMode">'
+   +[['school','학교별 시험 정보'],['student','학생별 시험 일정']].map(function(m){
+     return '<option value="'+m[0]+'"'+(ui.repMode===m[0]?' selected':'')+'>'+m[1]+'</option>'}).join('')+'</select></label>'
+  +'<label class="f">'+(ui.repMode==='school'?'학교':'담당 선생님')+'<select data-act="repScope">'
+   +scopes.map(function(x){return '<option'+(x===ui.repScope?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select></label>'
+  +'<button class="btn" data-act="print">인쇄 / PDF 저장</button>'
+  +'<button class="btn sec" data-act="csv">CSV 저장</button>'
+  +'<span class="small">'+r.rows.length+'행</span></div>';
+ h+='<div id="printArea"><div class="rephead"><div><b>KLADI 학원 · Kladi Sync</b> — '+esc(r.title)
+  +' <span class="muted">('+esc(ui.repScope)+')</span></div>'
+  +'<div class="muted">2026학년도 2학기 · 출력 '+new Date().toISOString().slice(0,10)+(S.updated?' · 최종 저장 '+esc(S.updated):'')+'</div></div>'
+  +'<div class="scroller"><table class="rep"><tr>'+r.head.map(function(x){return '<th>'+esc(x)+'</th>'}).join('')+'</tr>'
+  +r.rows.map(function(row){return '<tr>'+row.map(function(c,i){
+     var cls=(typeof c==='number'||/^\d/.test(String(c)))?' class="num"':'';
+     if(r.head[i]==='상태')cls=' class="st '+(c==='충돌'?'bad':c==='미실시'?'skip':(c==='완료'||c==='확정'?'good':''))+'"';
+     return '<td'+cls+'>'+esc(c)+'</td>'}).join('')+'</tr>'}).join('')
+  +'</table></div></div>';
+ return h;
+}
+
+function modalHTML(){
+ if(!ui.modal)return '';
+ var m=ui.modal,h='';
+ if(m.type==='math'||m.type==='detail'){
+   var g=groups()[m.key];if(!g)return '';
+   var e=eff(g),list=stuOf(e.school,e.grade);
+   var byT={};list.forEach(function(s){(byT[s.teacher]=byT[s.teacher]||[]).push(s)});
+   h='<h3>'+esc(e.school)+' '+esc(e.grade)+' '+esc(e.term)+'고사</h3>'
+    +'<div class="muted">시험기간 '+esc(md(e.start))+' ~ '+esc(md(e.end))+' · 수학 '+esc(md(e.mathDate)||'미입력')
+    +' · 직전보강 '+esc(md(makeupOf(e))||'—')+' · 프린트 '+esc(e.print||'미확인')+'</div>'
+    +(e.conflict?'<div class="banner warn" style="margin-top:8px">서로 다른 정보가 입력되어 있습니다. 정보 충돌 탭에서 확정해 주세요.</div>':'')
+    +(e.scope?'<div style="margin-top:10px"><b class="small">시험 범위</b><div style="font-size:13px">'+esc(e.scope)+'</div></div>':'')
+    +(e.notice?'<div style="margin-top:8px"><b class="small">학교 안내</b><div style="font-size:13px">'+esc(e.notice)+'</div></div>':'')
+    +'<div class="hr" style="margin:12px 0"></div><b class="small">담당 선생님별 학생 '+list.length+'명</b>'
+    +Object.keys(byT).sort().map(function(t){
+      return '<div style="margin-top:8px"><b style="font-size:13px">'+esc(t)+'</b> <span class="cnt">'+byT[t].length+'명</span><div>'
+       +byT[t].map(function(s){return '<span class="stu">'+esc(s.name)+(s.days.length?'':' <span style="color:var(--warn)">요일미입력</span>')+'</span>'}).join('')+'</div></div>'}).join('');
+ }
+ return '<div class="modal" data-act="closeModal"><div class="sheet" data-stop="1">'+h
+  +'<div style="margin-top:14px"><button class="btn sec" data-act="closeModal">닫기</button></div></div></div>';
+}
+
+function render(){
+ var body='';
+ if(ui.tab==='cal')body=calView();
+ else if(ui.tab==='input')body=inputView();
+ else if(ui.tab==='conf')body=confView();
+ else if(ui.tab==='stu')body=stuView();
+ else if(ui.tab==='prog')body=progView();
+ else if(ui.tab==='rep')body=repView();
+ else body=opsView();
+ root.innerHTML='<div class="wrap">'+head()+'<div class="stack">'+body+'</div>'
+  +'<div class="small">Kladi Sync · 초기 시험일정은 NEIS 학사일정 기준이며 담당 학생 확인 후 갱신하세요. · 저장 위치: '
+  +(STORE?'Firebase (선생님 전원 실시간 공유)':(cap?'공유 문서 (같은 링크를 보는 화면 자동 갱신)':'이 브라우저에만 저장 — 공유되지 않습니다'))
+  +'</div></div>'
+  +modalHTML();
+}
+
+/* ---------- 이벤트 ---------- */
+function fieldVals(key){
+ var o={};document.querySelectorAll('[data-k="'+key+'"][data-fld]').forEach(function(el){o[el.dataset.fld]=el.value});
+ return o;
+}
+document.addEventListener('click',function(ev){
+ var t=ev.target.closest('[data-act]');
+ if(!t){return}
+ var a=t.dataset.act;
+ if(a==='closeModal'){var inSheet=ev.target.closest('[data-stop]'),isBtn=ev.target.closest('button[data-act="closeModal"]');
+   if(!inSheet||isBtn){ui.modal=null;render()} return}
+ if(a==='tab'){ui.tab=t.dataset.v;msg='';render();return}
+ if(a==='month'){ui.month=+t.dataset.v;render();return}
+ if(a==='print'){window.print();return}
+ if(a==='csv'){var r=repRows();
+   dl('kladi-'+(ui.repMode==='school'?'시험정보':'학생일정')+'-'+ui.repScope+'.csv',csv([r.head].concat(r.rows)));return}
+ if(a==='math'||a==='detail'){ui.modal={type:a,key:t.dataset.k};render();return}
+ if(a==='submit'){
+   var k=t.dataset.k,v=fieldVals(k),p=k.split('|');
+   if(!v.start||!v.end){msg='시험 시작일과 종료일을 입력해 주세요.';render();return}
+   S.entries.push({id:uid('e'),school:p[0],grade:p[1],term:p[2],start:v.start,end:v.end,mathDate:v.mathDate||'',
+     scope:v.scope||'',print:(v.print==='미확인'?'':v.print||''),notice:v.notice||'',by:v.by||S.teachers[0],
+     ts:new Date().toISOString().slice(0,10),seed:false,confirmed:false});
+   save({t:'entry',e:S.entries[S.entries.length-1]});return;
+ }
+ if(a==='mk'){
+   var k2=t.dataset.k,el=document.querySelector('[data-k="'+k2+'"][data-fld="mk"]');
+   if(el&&el.value)S.overrides[k2]=el.value;else delete S.overrides[k2];
+   save({t:'ov',key:k2,v:(el&&el.value)||null});return;
+ }
+ if(a==='confirm'){
+   var id=t.dataset.id,tgt=S.entries.filter(function(e){return e.id===id})[0];if(!tgt)return;
+   var ids={};S.entries.forEach(function(e){if(keyOf(e)===keyOf(tgt)){e.confirmed=(e.id===id);ids[e.id]=e.confirmed}});
+   save({t:'confirm',ids:ids});return;
+ }
+ if(a==='delentry'){var did=t.dataset.id;S.entries=S.entries.filter(function(e){return e.id!==did});save({t:'delEntry',id:did});return}
+ if(a==='delstu'){
+   var s=S.students.filter(function(x){return x.id===t.dataset.id})[0];
+   if(s&&confirm(s.name+' 학생을 명단에서 제거할까요?')){s.active=false;save({t:'stu',s:s})}
+   return;
+ }
+ if(a==='addstu'){
+   var nm=$('na').value.trim(),sc2=$('nsc').value.trim();
+   if(!nm||!sc2){msg='이름과 학교를 입력해 주세요.';render();return}
+   var ds=[];document.querySelectorAll('.ndc:checked').forEach(function(c){ds.push(+c.value)});
+   S.students.push({id:uid('s'),name:nm,school:sc2,grade:$('ng').value,teacher:$('nt').value,days:ds,active:true});
+   if(S.schools.indexOf(sc2)<0){S.schools.push(sc2);S.schools.sort()}
+   save({t:'stu',s:S.students[S.students.length-1],schools:S.schools});return;
+ }
+});
+document.addEventListener('change',function(ev){
+ var t=ev.target.closest('[data-act]');if(!t)return;
+ var a=t.dataset.act;
+ if(a==='school'){ui.school=t.value;render()}
+ else if(a==='repMode'){ui.repMode=t.value;ui.repScope='전체';render()}
+ else if(a==='repScope'){ui.repScope=t.value;render()}
+ else if(a==='teacher'){ui.teacher=t.value;render()}
+ else if(a==='from'){ui.from=t.value;render()}
+ else if(a==='to'){ui.to=t.value;render()}
+ else if(a==='stuFilter'){ui.stuFilter=t.value;render()}
+ else if(a==='skip'){
+   var kk=t.dataset.k,rin=document.querySelector('[data-k="'+kk+'"][data-fld="skipReason"]');
+   var byS=document.querySelector('[data-k="'+kk+'"][data-fld="by"]');
+   if(t.checked)S.skips[kk]={reason:(rin&&rin.value.trim())||'수행평가 대체',by:(byS&&byS.value)||'',ts:new Date().toISOString().slice(0,10)};
+   else delete S.skips[kk];
+   save({t:'skip',key:kk,v:S.skips[kk]||null});
+ }
+ else if(a==='days'){
+   var s=S.students.filter(function(x){return x.id===t.dataset.id})[0];if(!s)return;
+   var d=+t.dataset.v,i=s.days.indexOf(d);
+   if(t.checked&&i<0)s.days.push(d);else if(!t.checked&&i>=0)s.days.splice(i,1);
+   s.days.sort();save({t:'stu',s:s});
+ }
+});
+document.addEventListener('input',function(ev){
+ var t=ev.target.closest('[data-act="stuQ"]');if(!t)return;
+ ui.stuQ=t.value;var pos=t.selectionStart;render();
+ var n=document.querySelector('[data-act="stuQ"]');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}
+});
+
+window.KLADI_ATTACH=function(store){
+ STORE=store;ro=false;msg='연결 중…';render();
+ Promise.resolve(store.init&&store.init()).then(function(){msg='';render()})
+ .catch(function(e){msg='연결 실패: '+(e&&e.message||e);render()});
+};
+function restoreLocal(){
+ try{var raw=localStorage.getItem(LKEY);if(!raw)return false;
+  var v=JSON.parse(raw);if(!v||!v.students)return false;
+  S.students=v.students;S.entries=v.entries||S.entries;S.overrides=v.overrides||{};S.skips=v.skips||{};
+  if(v.schools)S.schools=v.schools;S.updated=v.updated||'';return true;
+ }catch(e){return false}
+}
+render();
+if(window.claude&&window.claude.use){
+ window.claude.use('artifact').then(function(a){
+   cap=a;
+   if(!a){LOCAL=true;restoreLocal()}
+   render();
+ }).catch(function(){LOCAL=true;restoreLocal();render()});
+ window.claude.use('downloads').then(function(d){DL=d}).catch(function(){});
+}else{
+ LOCAL=true;restoreLocal();render();
+}
+})();
+</script>
+</body>
+</html>
