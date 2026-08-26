@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kladi Sync — KLADI 학원 시험 관제</title>
+<title>Kladi Exam Calendar — KLADI 학원</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -322,7 +322,7 @@ function pageHTML(){
  var json=JSON.stringify(S).replace(/</g,'\\u003c');
  return '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
  +'<meta name="viewport" content="width=device-width,initial-scale=1">'
- +'<title>Kladi Sync</title>'
+ +'<title>Kladi Exam Calendar</title>'
  +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">'
  +'<style id="css">'+css+'</style></head><body><div id="root"></div>'
  +'<script id="state" type="application/json">'+json+'<\/script>'
@@ -459,7 +459,7 @@ function head(){
            ['stu','학생 관리'+(noDays?'<span class="b">'+noDays+'</span>':'')],['ops','수업 운영표'],
            ['prog','입력 현황'],['rep','출력']];
  return '<div class="top"><div><div class="eyebrow">KLADI 학원 · 2026학년도 2학기</div>'
- +'<h1>Kladi Sync <span class="tagline">시험 정보 · 수업 운영 관제</span></h1></div>'
+ +'<h1>Kladi Exam Calendar <span class="tagline">시험 일정 · 수업 운영</span></h1></div>'
  +'<div class="savebox">'+(S.updated?'<span class="mono">최종 저장 '+esc(S.updated)+'</span>':'')
  +(msg?'<span class="pill '+(busy?'':(/실패|충돌|읽기|다른/.test(msg)?'warn':'ok'))+'">'+esc(msg)+'</span>':'')+'</div></div>'
  +(ro?'<div class="banner warn">보기 전용 링크로 열려 있어 입력 내용이 저장되지 않습니다. 편집 가능한 링크로 다시 열어 주세요.</div>':'')
@@ -764,7 +764,7 @@ function repView(){
   +'<button class="btn" data-act="print">인쇄 / PDF 저장</button>'
   +'<button class="btn sec" data-act="csv">CSV 저장</button>'
   +'<span class="small">'+r.rows.length+'행</span></div>';
- h+='<div id="printArea"><div class="rephead"><div><b>KLADI 학원 · Kladi Sync</b> — '+esc(r.title)
+ h+='<div id="printArea"><div class="rephead"><div><b>KLADI 학원 · Kladi Exam Calendar</b> — '+esc(r.title)
   +' <span class="muted">('+esc(ui.repScope)+')</span></div>'
   +'<div class="muted">2026학년도 2학기 · 출력 '+new Date().toISOString().slice(0,10)+(S.updated?' · 최종 저장 '+esc(S.updated):'')+'</div></div>'
   +'<div class="scroller"><table class="rep"><tr>'+r.head.map(function(x){return '<th>'+esc(x)+'</th>'}).join('')+'</tr>'
@@ -808,7 +808,7 @@ function render(){
  else if(ui.tab==='rep')body=repView();
  else body=opsView();
  root.innerHTML='<div class="wrap">'+head()+'<div class="stack">'+body+'</div>'
-  +'<div class="small">Kladi Sync · 초기 시험일정은 NEIS 학사일정 기준이며 담당 학생 확인 후 갱신하세요. · 저장 위치: '
+  +'<div class="small">Kladi Exam Calendar · 초기 시험일정은 NEIS 학사일정 기준이며 담당 학생 확인 후 갱신하세요. · 저장 위치: '
   +(STORE?'Firebase (선생님 전원 실시간 공유)':(cap?'공유 문서 (같은 링크를 보는 화면 자동 갱신)':'이 브라우저에만 저장 — 공유되지 않습니다'))
   +'</div></div>'
   +modalHTML();
