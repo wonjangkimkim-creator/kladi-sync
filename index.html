@@ -148,6 +148,20 @@ td.st.good{color:var(--ok)} td.st.bad{color:var(--warn)}
 .skiprow input[type=text]{flex:1;min-width:170px;font-size:12px;padding:4px 8px}
 td.st.skip{color:var(--ink3)}
 
+/* ---------- 캘린더 범례 ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:7px 16px;align-items:center;font-size:12px;color:var(--ink2);
+ padding:9px 12px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.legend .lg{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend .sub2{font-weight:400;color:var(--ink3);font-size:11px}
+.legend .sw{width:15px;height:11px;border-radius:2px;flex:none;border-left:3px solid}
+.legend .sw.중간{background:var(--mid-bg);border-color:var(--mid)}
+.legend .sw.기말{background:var(--fin-bg);border-color:var(--fin)}
+.legend .sw.m3{background:var(--m3-bg);border-color:var(--m3)}
+.legend .sw.math{background:var(--ok-bg);border:1px solid var(--ok)}
+.legend .sw.mk{background:var(--m3);border:0;width:9px;height:9px;border-radius:50%}
+.legend .sw.holi{background:var(--hol-bg);border:1px solid var(--hol)}
+
+
 .fbbanner{font-family:"IBM Plex Sans KR",sans-serif;font-size:13px;padding:11px 18px;background:#FBE9E7;color:#B4342A;border-bottom:1px solid #B4342A}
 .fbbanner.info{background:#E2F1EE;color:#0B6B62;border-color:#0B6B62}
 .fbbanner code{font-family:"IBM Plex Mono",monospace;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px}
@@ -473,7 +487,17 @@ function calView(){
  var st=add(first,-((first.getDay()+6)%7)),en=add(last,(7-((last.getDay()+6)%7))%7);
  var h='<div class="bar">'+[9,10,11,12].map(function(x){
    return '<button class="btn '+(x===m?'':'sec')+' sm" data-act="month" data-v="'+x+'">'+x+'월</button>'}).join('')
-   +'<span class="small">기간 막대를 클릭하면 상세, 수학 배지를 클릭하면 학생 명단이 열립니다.</span></div>';
+   +'<span class="small">기간 막대를 클릭하면 상세, 수학 배지를 클릭하면 학생 명단이 열립니다.</span></div>'
+  +'<div class="legend">'
+  +'<span class="lg"><i class="sw 중간"></i>중간고사 <b class="sub2">중1·2 / 고1·2</b></span>'
+  +'<span class="lg"><i class="sw 기말"></i>기말고사 <b class="sub2">중1·2 / 고1·2</b></span>'
+  +'<span class="lg"><i class="sw m3"></i>중3 기말 <b class="sub2">중3의 학기 마지막 시험</b></span>'
+  +'<span class="lg"><i class="sw math"></i>수학 시험일 <b class="sub2">클릭 시 학생 명단</b></span>'
+  +'<span class="lg"><i class="sw mk"></i>직전 보강</span>'
+  +'<span class="lg"><i class="sw holi"></i>공휴일</span>'
+  +'<span class="lg" style="color:var(--warn);font-weight:600">⚠ 정보 충돌</span>'
+  +'<span class="lg sub2">막대 오른쪽 숫자 = 해당 재원생 수</span>'
+  +'</div>';
  h+='<div class="scroller"><div class="grid7">';
  '월화수목금토일'.split('').forEach(function(w,i){h+='<div class="dow'+(i===5?' sat':i===6?' sun':'')+'">'+w+'</div>'});
  for(var d=new Date(st.getTime());d<=en;d=add(d,1)){
